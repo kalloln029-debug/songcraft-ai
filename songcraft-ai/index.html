@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#05070f">
+    <meta name="description" content="Turn any feeling into a song-ready blueprint.">
+    <title>Songcraft AI | Song Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css">
+    <script src="/firebase-config.js"></script>
+    <script type="module" src="/auth.js"></script>
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body class="studio-page">
+    <header class="navbar">
+      <a class="nav-brand" href="/index.html" aria-label="Songcraft AI home">
+        <span class="nav-brand-mark">♪</span>
+        <span>SONGCRAFT <b>AI</b></span>
+      </a>
+      <div class="nav-account">
+        <img class="user-avatar" id="userAvatar" alt="" hidden>
+        <span class="user-name" id="userName">Welcome to the studio</span>
+        <button class="button button-outline logout-button" id="logoutBtn" type="button">Leave Studio</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero content-width">
+        <p class="eyebrow">A LITTLE SPARK. A WHOLE NEW SONG.</p>
+        <h1>Turn any feeling into a <span>song-ready blueprint.</span></h1>
+        <p class="hero-copy">Bring the feeling. We’ll help shape it into lyrics, sound, and a direction all your own.</p>
+      </section>
+
+      <section class="studio-card content-width" aria-labelledby="studio-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE SONG STUDIO</p>
+            <h2 id="studio-heading">Start with a feeling</h2>
+          </div>
+          <span class="step-badge">01 <span>/ 03</span></span>
+        </div>
+
+        <form id="composeForm" novalidate>
+          <label class="field-label" for="ideaInput">What’s the song about?</label>
+          <textarea id="ideaInput" name="idea" rows="4" maxlength="4000" placeholder="A late-night drive home, missing someone but finally feeling okay..." required></textarea>
+          <div class="field-meta"><span>Be as specific or abstract as you like.</span><span id="ideaCount">0 / 4000</span></div>
+
+          <fieldset class="mood-fieldset">
+            <legend class="field-label">Choose the mood <span class="field-hint">(pick one or more)</span></legend>
+            <div class="mood-list" id="moodList">
+              <button type="button" class="mood-chip" data-mood="Happy" aria-pressed="false">☀ <span>Happy</span></button>
+              <button type="button" class="mood-chip" data-mood="Melancholic" aria-pressed="false">☾ <span>Melancholic</span></button>
+              <button type="button" class="mood-chip" data-mood="Dreamy" aria-pressed="false">✧ <span>Dreamy</span></button>
+              <button type="button" class="mood-chip" data-mood="Romantic" aria-pressed="false">♡ <span>Romantic</span></button>
+              <button type="button" class="mood-chip" data-mood="Nostalgic" aria-pressed="false">↺ <span>Nostalgic</span></button>
+              <button type="button" class="mood-chip" data-mood="Epic" aria-pressed="false">✦ <span>Epic</span></button>
+              <button type="button" class="mood-chip" data-mood="Chill" aria-pressed="false">☁ <span>Chill</span></button>
+            </div>
+          </fieldset>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="field-label" for="genreSelect">Genre</label>
+              <select id="genreSelect" name="genre">
+                <option>Pop</option><option>Indie</option><option>R&amp;B</option><option>Hip-Hop</option><option>Rock</option><option>EDM</option><option>Lo-fi</option><option>Country</option><option>Bollywood</option><option>Bengali</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="field-label" for="languageSelect">Language</label>
+              <select id="languageSelect" name="language">
+                <option>English</option><option>Hindi</option><option>Bengali</option><option>Bilingual</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field keywords-field">
+            <label class="field-label" for="keywordsInput">Words, images, or details to include <span class="field-hint">(optional)</span></label>
+            <input id="keywordsInput" name="keywords" type="text" maxlength="300" placeholder="rain on the window, old photographs, “come back home”">
+          </div>
+
+          <p class="form-error" id="formError" role="alert" aria-live="polite"></p>
+          <button class="button button-gold compose-button" id="composeBtn" type="submit">
+            <span>Compose Song Blueprint</span><span aria-hidden="true">↗</span>
+          </button>
+        </form>
+
+        <div class="loading-state" id="loadingState" hidden aria-live="polite">
+          <div class="waveform" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <p>Finding the shape of your song…</p>
+        </div>
+      </section>
+
+      <section class="results content-width" id="resultsSection" hidden aria-live="polite">
+        <div class="results-heading">
+          <p class="eyebrow">YOUR BLUEPRINT IS READY</p>
+          <h2 id="resultTitle"></h2>
+        </div>
+        <article class="output-card">
+          <div class="output-card-heading"><h3>Style Prompt</h3><button class="copy-button" type="button" data-copy="stylePrompt">Copy</button></div>
+          <p class="output-text" id="stylePrompt"></p>
+        </article>
+        <article class="output-card lyrics-card">
+          <div class="output-card-heading"><h3>Lyrics</h3><button class="copy-button" type="button" data-copy="lyricsText">Copy</button></div>
+          <pre class="output-text lyrics-text" id="lyricsText"></pre>
+        </article>
+        <div class="metadata-row">
+          <div class="metadata-card"><span>BPM</span><strong id="metadataBpm">—</strong></div>
+          <div class="metadata-card"><span>KEY</span><strong id="metadataKey">—</strong></div>
+          <div class="metadata-card"><span>THEME</span><strong id="metadataTheme">—</strong></div>
+        </div>
+      </section>
+
+      <section class="how-it-works content-width">
+        <div class="section-heading">
+          <div><p class="eyebrow">FROM THOUGHT TO TRACK</p><h2>How it works</h2></div>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card"><span class="step-number">01</span><h3>Share the feeling</h3><p>Describe a moment, a memory, or just a mood.</p></article>
+          <article class="step-card"><span class="step-number">02</span><h3>Shape the sound</h3><p>Choose your mood, genre, language, and details.</p></article>
+          <article class="step-card"><span class="step-number">03</span><h3>Make it yours</h3><p>Take your lyrics and musical direction into the studio.</p></article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><span>Designed &amp; built by AUNTARIK</span><span>Make something that feels like you.</span></footer>
+    <div class="watermark">CREATOR AUNTARIK</div>
+  </body>
+</html>
